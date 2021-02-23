@@ -59,6 +59,37 @@ public class Server {
         }
     }
 
+    /**
+     * Отправляет сообщение клиенту с переданным nikName и отправителю сообщения. В случае если клиента с переданным
+     * nikName не существует отправляет клиенту отправителю сообщение с предупреждением.
+     * @param sender отправитель сообщения
+     * @param nikName nik клиента получателя
+     * @param msg текст сообщения
+     */
+    public void withAddressMsg(ClientHandler sender, String nikName, String msg){
+        String message;
+
+        // Ищем клиента с переданным nikName в списке активных клиентов
+        ClientHandler recipient = null;
+        for (ClientHandler c : clients) {
+            if (c.getNickname().equals(nikName)) {
+                recipient = c;
+                break;
+            }
+        }
+
+        // Если клиент не найден формируем предупреждение
+        // Иначе формируем текст сообщения и отправляем получателю
+        if (recipient == null) {
+            message = String.format("[SERVER]: Сообщение \"%s\" не было доставлено. Клиент %s не найден", msg, nikName);
+        } else {
+            message = String.format("[ %s ]: %s", sender.getNickname(), msg);
+            recipient.sendMsg(message);
+        }
+
+        sender.sendMsg(message);
+    }
+
     public void subscribe(ClientHandler clientHandler){
         clients.add(clientHandler);
     }
