@@ -56,10 +56,21 @@ public class ClientHandler {
                     //цикл работы
                     while (true) {
                         String str = in.readUTF();
+                        str = str.trim();
 
                         if (str.equals(Command.END)) {
                             out.writeUTF(Command.END);
                             break;
+                        }
+
+                        // Если сообщение имеет адрес назначения - извлекаем получателя и текст сообщения, делаем
+                        // приватную рассылку и переходим к чтению следующего сообщения
+                        if (str.startsWith(Command.WITH_ADDRESS)) {
+                            String[] message = str.split("\\s+", 3);
+                            if (message.length == 3) {
+                                server.withAddressMsg(this, message[1], message[2]);
+                            }
+                            continue;
                         }
 
                         server.broadcastMsg(this, str);
